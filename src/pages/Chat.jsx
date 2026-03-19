@@ -25,6 +25,25 @@ const Chat = ({ isAdmin = false }) => {
   }, [user, displayChats, activeChat]);
 
   useEffect(() => {
+    const checkForNewMessages = () => {
+      const storedChats = JSON.parse(localStorage.getItem('echo_chats') || '[]');
+      if (isAdmin) {
+        const latestChats = storedChats.filter(c => c.userId && c.userId !== 'admin');
+        if (JSON.stringify(latestChats) !== JSON.stringify(displayChats)) {
+          window.location.reload();
+        }
+      } else if (user && activeChat) {
+        const latestChat = storedChats.find(c => c.id === activeChat.id);
+        if (latestChat && JSON.stringify(latestChat.messages) !== JSON.stringify(activeChat.messages)) {
+          setActiveChat(latestChat);
+        }
+      }
+    };
+    const interval = setInterval(checkForNewMessages, 3000);
+    return () => clearInterval(interval);
+  }, [isAdmin, user, activeChat, displayChats]);
+
+  useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [activeChat?.messages]);
 

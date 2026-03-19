@@ -79,6 +79,17 @@ export const AppProvider = ({ children }) => {
     localStorage.setItem('echo_chats', JSON.stringify(chats));
   }, [chats]);
 
+  useEffect(() => {
+    const handleStorageChange = (e) => {
+      if (e.key === 'echo_chats') {
+        const newChats = JSON.parse(e.newValue || '[]');
+        setChats(newChats);
+      }
+    };
+    window.addEventListener('storage', handleStorageChange);
+    return () => window.removeEventListener('storage', handleStorageChange);
+  }, []);
+
   const updateCompanyData = (newData) => {
     setCompanyData(prev => ({ ...prev, ...newData }));
   };
