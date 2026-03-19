@@ -169,6 +169,14 @@ export const AppProvider = ({ children }) => {
   const getChatsForAdmin = () => chats;
   const getChatsForCustomer = (userId) => chats.filter(c => c.userId === userId || c.userId === 'admin');
 
+  const getLoggedInUsersCount = () => {
+    return JSON.parse(localStorage.getItem('echo_logged_in_users') || '[]').length;
+  };
+
+  const getTotalLoginsCount = () => {
+    return parseInt(localStorage.getItem('echo_total_logins') || '0');
+  };
+
   const value = {
     companyData,
     updateCompanyData,
@@ -181,7 +189,9 @@ export const AppProvider = ({ children }) => {
     startChat,
     sendMessage,
     getChatsForAdmin,
-    getChatsForCustomer
+    getChatsForCustomer,
+    getLoggedInUsersCount,
+    getTotalLoginsCount
   };
 
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>;

@@ -43,6 +43,13 @@ export const AuthProvider = ({ children }) => {
       const { password: _, ...safeUser } = foundUser;
       setUser(safeUser);
       localStorage.setItem('echo_user', JSON.stringify(safeUser));
+      
+      const loggedInUsers = JSON.parse(localStorage.getItem('echo_logged_in_users') || '[]');
+      if (!loggedInUsers.find(u => u.id === safeUser.id)) {
+        loggedInUsers.push({ ...safeUser, loginTime: new Date().toISOString() });
+        localStorage.setItem('echo_logged_in_users', JSON.stringify(loggedInUsers));
+        localStorage.setItem('echo_total_logins', String((parseInt(localStorage.getItem('echo_total_logins') || '0') + 1)));
+      }
       return safeUser;
     }
     return null;

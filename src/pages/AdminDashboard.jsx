@@ -2,12 +2,19 @@ import { Link, useNavigate } from 'react-router-dom';
 import { Sparkles, MessageCircle, Settings, Plus, Eye, Edit, Trash2, ChevronRight, ExternalLink, Menu, X, LogOut } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useApp } from '../context/AppContext';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 const AdminDashboard = () => {
   const { logout } = useAuth();
-  const { companyData, updateAchievement, addPortfolioItem, deletePortfolioItem, chats } = useApp();
+  const { companyData, updateAchievement, addPortfolioItem, deletePortfolioItem, chats, getLoggedInUsersCount, getTotalLoginsCount } = useApp();
   const navigate = useNavigate();
+  const [loggedInCount, setLoggedInCount] = useState(0);
+  const [totalLogins, setTotalLogins] = useState(0);
+
+  useEffect(() => {
+    setLoggedInCount(getLoggedInUsersCount());
+    setTotalLogins(getTotalLoginsCount());
+  }, [chats]);
   const [editingAchievement, setEditingAchievement] = useState(null);
   const [achievementValue, setAchievementValue] = useState('');
   const [showAddProject, setShowAddProject] = useState(false);
@@ -95,7 +102,7 @@ const AdminDashboard = () => {
           <p className="text-slate-400 text-sm">Manage your company data and chat with clients</p>
         </div>
 
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+        <div className="grid grid-cols-2 lg:grid-cols-6 gap-4 mb-6">
           {companyData.achievements.map((achievement, i) => (
             <div key={i} className="card p-4">
               <div className="flex items-center justify-between mb-2">
@@ -119,6 +126,24 @@ const AdminDashboard = () => {
               )}
             </div>
           ))}
+          <div className="card p-4 bg-emerald-500/10 border-emerald-500/30">
+            <div className="flex items-center justify-between mb-2">
+              <span className="text-slate-400 text-xs">Currently Online</span>
+              <span className="text-xl">👥</span>
+            </div>
+            <div className="text-2xl font-bold text-emerald-400">
+              {loggedInCount}
+            </div>
+          </div>
+          <div className="card p-4 bg-blue-500/10 border-blue-500/30">
+            <div className="flex items-center justify-between mb-2">
+              <span className="text-slate-400 text-xs">Total Logins</span>
+              <span className="text-xl">🔑</span>
+            </div>
+            <div className="text-2xl font-bold text-blue-400">
+              {totalLogins}
+            </div>
+          </div>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">

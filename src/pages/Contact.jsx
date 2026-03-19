@@ -100,7 +100,7 @@ const Contact = () => {
                 <h2 className="text-xl font-bold text-white mb-5">Connect on Instagram</h2>
                 <p className="text-slate-400 text-sm mb-4">Follow us on Instagram for updates and more!</p>
                 <a
-                  href="https://instagram.com/yourusername"
+                  href="https://www.instagram.com/echo_ai365?igsh=MTVpcW1udTczNjJtMw=="
                   target="_blank"
                   rel="noopener noreferrer"
                   className="w-full py-3 bg-gradient-to-r from-purple-600 via-pink-500 to-orange-500 hover:opacity-90 text-white font-semibold rounded-xl transition-opacity flex items-center justify-center gap-2"
@@ -108,6 +108,18 @@ const Contact = () => {
                   <Instagram className="w-5 h-5" />
                   Follow on Instagram
                 </a>
+              </div>
+
+              <div className="card p-6">
+                <h2 className="text-xl font-bold text-white mb-5">Scan QR Code</h2>
+                <p className="text-slate-400 text-sm mb-4">Scan to connect with us on WhatsApp!</p>
+                <div className="flex justify-center">
+                  <img 
+                    src="/qr-code.jpg" 
+                    alt="QR Code" 
+                    className="w-48 h-48 object-contain rounded-xl border border-slate-600"
+                  />
+                </div>
               </div>
 
               <div className="card p-6">

@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { Send, Sparkles, Menu, X, ArrowLeft } from 'lucide-react';
+import { Send, Sparkles, Menu, X, ArrowLeft, Check, CheckCheck, Phone, Video } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useApp } from '../context/AppContext';
 
@@ -8,7 +8,6 @@ const Chat = ({ isAdmin = false }) => {
   const { user } = useAuth();
   const { chats, activeChat, setActiveChat, startChat, sendMessage, getChatsForAdmin, getChatsForCustomer } = useApp();
   const [message, setMessage] = useState('');
-  const [isTyping, setIsTyping] = useState(false);
   const [showSidebar, setShowSidebar] = useState(true);
   const messagesEndRef = useRef(null);
 
@@ -22,7 +21,7 @@ const Chat = ({ isAdmin = false }) => {
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-  }, [activeChat?.messages, isTyping]);
+  }, [activeChat?.messages]);
 
   const handleSend = (e) => {
     e.preventDefault();
@@ -30,18 +29,24 @@ const Chat = ({ isAdmin = false }) => {
 
     sendMessage(activeChat.id, message, isAdmin ? 'admin' : 'user');
     setMessage('');
-    
-    if (!isAdmin) {
-      setIsTyping(true);
-      setTimeout(() => {
-        sendMessage(activeChat.id, "Thanks for your message! I'll get back to you shortly.", 'admin');
-        setIsTyping(false);
-      }, 1500);
-    }
   };
 
   const formatTime = (timestamp) => {
     return new Date(timestamp).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+  };
+
+  const formatDate = (timestamp) => {
+    const date = new Date(timestamp);
+    const today = new Date();
+    const yesterday = new Date(today);
+    yesterday.setDate(yesterday.getDate() - 1);
+    
+    if (date.toDateString() === today.toDateString()) {
+      return 'Today';
+    } else if (date.toDateString() === yesterday.toDateString()) {
+      return 'Yesterday';
+    }
+    return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
   };
 
   const handleSelectChat = (chat) => {
@@ -49,24 +54,30 @@ const Chat = ({ isAdmin = false }) => {
     setShowSidebar(false);
   };
 
+  const handleStartChat = () => {
+    if (!isAdmin && user) {
+      startChat(user.id, user.name, user.email);
+    }
+  };
+
   return (
-    <div className="h-screen bg-slate-900 flex flex-col overflow-hidden">
-      <nav className="bg-slate-800 border-b border-slate-700 shrink-0">
+    <div className="h-screen bg-[#111a21] flex flex-col overflow-hidden">
+      <nav className="bg-[#1f2c33] border-b border-[#333f47] shrink-0">
         <div className="px-4 py-3 flex items-center justify-between">
           <Link to={isAdmin ? "/admin" : "/dashboard"} className="flex items-center gap-2">
-            <div className="w-8 h-8 bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 rounded-lg flex items-center justify-center">
+            <div className="w-8 h-8 bg-gradient-to-br from-emerald-500 via-teal-500 to-cyan-500 rounded-lg flex items-center justify-center">
               <Sparkles className="w-4 h-4 text-white" />
             </div>
             <span className="text-lg font-bold text-white">ECHO_AI</span>
-            {isAdmin && <span className="hidden sm:inline px-2 py-0.5 bg-indigo-500/20 text-indigo-400 text-xs font-medium rounded">Admin</span>}
+            {isAdmin && <span className="hidden sm:inline px-2 py-0.5 bg-emerald-500/20 text-emerald-400 text-xs font-medium rounded">Admin</span>}
           </Link>
           <div className="flex items-center gap-2">
             {activeChat && (
-              <button onClick={() => setShowSidebar(!showSidebar)} className="md:hidden p-2 text-slate-400">
+              <button onClick={() => setShowSidebar(!showSidebar)} className="md:hidden p-2 text-[#8696a1]">
                 <Menu className="w-5 h-5" />
               </button>
             )}
-            <Link to={isAdmin ? "/admin" : "/dashboard"} className="p-2 text-slate-400 hover:text-white">
+            <Link to={isAdmin ? "/admin" : "/dashboard"} className="p-2 text-[#8696a1] hover:text-white">
               <ArrowLeft className="w-5 h-5" />
             </Link>
           </div>
@@ -75,14 +86,14 @@ const Chat = ({ isAdmin = false }) => {
 
       <div className="flex-1 flex overflow-hidden">
         {isAdmin && showSidebar && (
-          <div className="w-full md:w-80 bg-slate-800 border-r border-slate-700 flex flex-col shrink-0">
-            <div className="p-4 border-b border-slate-700">
+          <div className="w-full md:w-80 bg-[#111a21] border-r border-[#333f47] flex flex-col shrink-0">
+            <div className="p-4 border-b border-[#333f47]">
               <h2 className="font-semibold text-white">Conversations</h2>
-              <p className="text-sm text-slate-400">{displayChats.length} active</p>
+              <p className="text-sm text-[#8696a1]">{displayChats.length} active</p>
             </div>
             <div className="flex-1 overflow-y-auto">
               {displayChats.length === 0 ? (
-                <div className="p-6 text-center text-slate-400">
+                <div className="p-6 text-center text-[#8696a1]">
                   <p>No conversations yet</p>
                 </div>
               ) : (
@@ -90,22 +101,22 @@ const Chat = ({ isAdmin = false }) => {
                   <button
                     key={chat.id}
                     onClick={() => handleSelectChat(chat)}
-                    className={`w-full p-4 text-left border-b border-slate-700/50 transition-colors ${
-                      activeChat?.id === chat.id ? 'bg-indigo-500/20' : 'hover:bg-slate-700/50'
+                    className={`w-full p-4 text-left border-b border-[#333f47]/50 transition-colors ${
+                      activeChat?.id === chat.id ? 'bg-[#2a3942]' : 'hover:bg-[#1f2c33]'
                     }`}
                   >
                     <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-full flex items-center justify-center text-white font-bold shrink-0">
+                      <div className="w-12 h-12 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-full flex items-center justify-center text-white font-bold shrink-0">
                         {chat.userName?.charAt(0).toUpperCase()}
                       </div>
                       <div className="flex-1 min-w-0">
                         <div className="flex justify-between items-center">
                           <span className="font-medium text-white truncate">{chat.userName}</span>
                           {chat.messages.length > 0 && (
-                            <span className="text-xs text-slate-500 shrink-0 ml-2">{formatTime(chat.messages[chat.messages.length - 1].timestamp)}</span>
+                            <span className="text-xs text-[#8696a1] shrink-0 ml-2">{formatTime(chat.messages[chat.messages.length - 1].timestamp)}</span>
                           )}
                         </div>
-                        <p className="text-sm text-slate-400 truncate">{chat.lastMessage || 'No messages'}</p>
+                        <p className="text-sm text-[#8696a1] truncate">{chat.lastMessage || 'No messages'}</p>
                       </div>
                     </div>
                   </button>
@@ -115,63 +126,89 @@ const Chat = ({ isAdmin = false }) => {
           </div>
         )}
 
-        <div className="flex-1 flex flex-col min-w-0">
+        <div className="flex-1 flex flex-col min-w-0 bg-[#0b141a]">
           {activeChat ? (
             <>
-              <div className="p-4 bg-slate-800 border-b border-slate-700 shrink-0">
-                <div className="flex items-center gap-3">
-                  {isAdmin && (
-                    <button onClick={() => setShowSidebar(false)} className="md:hidden p-1 text-slate-400">
-                      <X className="w-5 h-5" />
-                    </button>
-                  )}
-                  <div className="w-10 h-10 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-full flex items-center justify-center text-white font-bold shrink-0">
-                    {activeChat.userName?.charAt(0).toUpperCase()}
+              <div className="p-3 bg-[#1f2c33] border-b border-[#333f47] shrink-0">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    {isAdmin && (
+                      <button onClick={() => setShowSidebar(false)} className="md:hidden p-1 text-[#8696a1]">
+                        <X className="w-5 h-5" />
+                      </button>
+                    )}
+                    <div className="w-12 h-12 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-full flex items-center justify-center text-white font-bold shrink-0">
+                      {isAdmin ? activeChat.userName?.charAt(0).toUpperCase() : 'E'}
+                    </div>
+                    <div className="min-w-0">
+                      <h3 className="font-semibold text-white truncate flex items-center gap-2">
+                        {isAdmin ? activeChat.userName : 'ECHO_AI Support'}
+                        <span className="w-2 h-2 bg-emerald-500 rounded-full"></span>
+                      </h3>
+                      <p className="text-sm text-[#8696a1] truncate">{isAdmin ? activeChat.userEmail : 'Online'}</p>
+                    </div>
                   </div>
-                  <div className="min-w-0">
-                    <h3 className="font-semibold text-white truncate">{isAdmin ? activeChat.userName : 'ECHO_AI Team'}</h3>
-                    <p className="text-sm text-slate-400 truncate">{activeChat.userEmail}</p>
+                  <div className="flex items-center gap-1">
+                    <button className="p-2 text-[#8696a1] hover:bg-[#2a3942] rounded-full transition-colors">
+                      <Phone className="w-5 h-5" />
+                    </button>
+                    <button className="p-2 text-[#8696a1] hover:bg-[#2a3942] rounded-full transition-colors">
+                      <Video className="w-5 h-5" />
+                    </button>
                   </div>
                 </div>
               </div>
 
-              <div className="flex-1 overflow-y-auto p-4 space-y-4">
-                {activeChat.messages.map((msg, i) => (
-                  <div key={i} className={`flex ${msg.sender === (isAdmin ? 'admin' : 'user') ? 'justify-end' : 'justify-start'}`}>
-                    <div className={`max-w-[85%] sm:max-w-[70%] p-3 sm:p-4 rounded-2xl ${
-                      msg.sender === (isAdmin ? 'admin' : 'user')
-                        ? 'bg-indigo-600 text-white rounded-br-sm'
-                        : 'bg-slate-700 text-white rounded-bl-sm'
-                    }`}>
-                      <p className="leading-relaxed break-words">{msg.content}</p>
-                      <p className="text-xs opacity-60 mt-2">{formatTime(msg.timestamp)}</p>
-                    </div>
-                  </div>
-                ))}
-                {isTyping && (
-                  <div className="flex justify-start">
-                    <div className="bg-slate-700 p-4 rounded-2xl rounded-bl-sm flex items-center gap-2">
-                      <div className="flex gap-1">
-                        <div className="w-2 h-2 bg-slate-400 rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
-                        <div className="w-2 h-2 bg-slate-400 rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
-                        <div className="w-2 h-2 bg-slate-400 rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
+              <div className="flex-1 overflow-y-auto p-4 space-y-2">
+                {activeChat.messages.map((msg, i) => {
+                  const isOwn = msg.sender === (isAdmin ? 'admin' : 'user');
+                  const showDate = i === 0 || new Date(msg.timestamp).toDateString() !== new Date(activeChat.messages[i-1].timestamp).toDateString();
+                  
+                  return (
+                    <div key={i}>
+                      {showDate && (
+                        <div className="flex justify-center mb-4">
+                          <span className="text-xs text-[#8696a1] bg-[#1f2c33] px-3 py-1 rounded-full">
+                            {formatDate(msg.timestamp)}
+                          </span>
+                        </div>
+                      )}
+                      <div className={`flex ${isOwn ? 'justify-end' : 'justify-start'}`}>
+                        <div className={`max-w-[75%] p-3 rounded-2xl ${
+                          isOwn 
+                            ? 'bg-[#005c4b] text-white rounded-br-sm' 
+                            : 'bg-[#1f2c33] text-white rounded-bl-sm'
+                        }`}>
+                          <p className="leading-relaxed break-words">{msg.content}</p>
+                          <div className={`flex items-center justify-end gap-1 mt-1 ${isOwn ? 'text-[#abcffc]/70' : 'text-[#8696a1]'}`}>
+                            <span className="text-xs">{formatTime(msg.timestamp)}</span>
+                            {isOwn && (
+                              <span className="text-xs">
+                                <CheckCheck className="w-3.5 h-3.5" />
+                              </span>
+                            )}
+                          </div>
+                        </div>
                       </div>
                     </div>
-                  </div>
-                )}
+                  );
+                })}
                 <div ref={messagesEndRef} />
               </div>
 
-              <form onSubmit={handleSend} className="p-4 bg-slate-800 border-t border-slate-700 shrink-0">
-                <div className="flex gap-2">
+              <form onSubmit={handleSend} className="p-3 bg-[#1f2c33] border-t border-[#333f47] shrink-0">
+                <div className="flex items-center gap-2 bg-[#1f2c33] rounded-xl px-3 py-2">
+                  <button type="button" className="p-2 text-[#8696a1] hover:text-white">
+                    <span className="text-xl">📎</span>
+                  </button>
                   <input
                     type="text"
                     value={message}
                     onChange={(e) => setMessage(e.target.value)}
                     placeholder={isAdmin ? "Type a reply..." : "Type your message..."}
-                    className="flex-1 px-4 py-3 bg-slate-700 border border-slate-600 rounded-xl text-white placeholder-slate-400 focus:outline-none focus:border-indigo-500 transition-colors"
+                    className="flex-1 px-3 py-2 bg-transparent border-none text-white placeholder-[#8696a1] focus:outline-none"
                   />
-                  <button type="submit" className="px-5 py-3 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl transition-colors shrink-0">
+                  <button type="submit" className={`p-2 rounded-full transition-colors ${message.trim() ? 'bg-[#00a884] text-white' : 'text-[#8696a1]'}`}>
                     <Send className="w-5 h-5" />
                   </button>
                 </div>
@@ -180,13 +217,21 @@ const Chat = ({ isAdmin = false }) => {
           ) : (
             <div className="flex-1 flex items-center justify-center p-4">
               <div className="text-center">
-                <div className="w-16 h-16 bg-slate-800 rounded-2xl flex items-center justify-center mx-auto mb-4">
-                  <Sparkles className="w-8 h-8 text-slate-600" />
+                <div className="w-20 h-20 bg-[#1f2c33] rounded-2xl flex items-center justify-center mx-auto mb-4">
+                  <Sparkles className="w-10 h-10 text-[#00a884]" />
                 </div>
-                <h3 className="text-lg font-semibold text-white mb-2">Welcome to Chat</h3>
-                <p className="text-slate-400 text-sm">
-                  {isAdmin ? 'Select a conversation from the list' : 'Start a conversation with our team'}
+                <h3 className="text-xl font-semibold text-white mb-2">WhatsApp-style Chat</h3>
+                <p className="text-[#8696a1] text-sm mb-6">
+                  {isAdmin ? 'Select a conversation from the list to start chatting' : 'Start a conversation with our support team'}
                 </p>
+                {!isAdmin && (
+                  <button 
+                    onClick={handleStartChat}
+                    className="px-6 py-3 bg-[#00a884] hover:bg-[#008f6b] text-white font-semibold rounded-xl transition-colors"
+                  >
+                    Start New Chat
+                  </button>
+                )}
               </div>
             </div>
           )}
