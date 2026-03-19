@@ -6,14 +6,16 @@ import { useState, useEffect } from 'react';
 
 const AdminDashboard = () => {
   const { logout } = useAuth();
-  const { companyData, updateAchievement, addPortfolioItem, deletePortfolioItem, chats, getLoggedInUsersCount, getTotalLoginsCount } = useApp();
+  const { companyData, updateAchievement, addPortfolioItem, deletePortfolioItem, chats, getLoggedInUsersCount, getTotalLoginsCount, getTotalUsersCount } = useApp();
   const navigate = useNavigate();
   const [loggedInCount, setLoggedInCount] = useState(0);
   const [totalLogins, setTotalLogins] = useState(0);
+  const [totalUsers, setTotalUsers] = useState(0);
 
   useEffect(() => {
     setLoggedInCount(getLoggedInUsersCount());
     setTotalLogins(getTotalLoginsCount());
+    setTotalUsers(getTotalUsersCount());
   }, [chats]);
   const [editingAchievement, setEditingAchievement] = useState(null);
   const [achievementValue, setAchievementValue] = useState('');
@@ -142,6 +144,15 @@ const AdminDashboard = () => {
             </div>
             <div className="text-2xl font-bold text-blue-400">
               {totalLogins}
+            </div>
+          </div>
+          <div className="card p-4 bg-purple-500/10 border-purple-500/30">
+            <div className="flex items-center justify-between mb-2">
+              <span className="text-slate-400 text-xs">Total Users</span>
+              <span className="text-xl">👤</span>
+            </div>
+            <div className="text-2xl font-bold text-purple-400">
+              {totalUsers}
             </div>
           </div>
         </div>

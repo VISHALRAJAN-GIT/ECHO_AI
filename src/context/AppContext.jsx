@@ -166,8 +166,8 @@ export const AppProvider = ({ children }) => {
     return newMessage;
   };
 
-  const getChatsForAdmin = () => chats;
-  const getChatsForCustomer = (userId) => chats.filter(c => c.userId === userId || c.userId === 'admin');
+  const getChatsForAdmin = () => chats.filter(c => c.userId && c.userId !== 'admin');
+  const getChatsForCustomer = (userId) => chats.filter(c => c.userId === userId);
 
   const getLoggedInUsersCount = () => {
     return JSON.parse(localStorage.getItem('echo_logged_in_users') || '[]').length;
@@ -175,6 +175,10 @@ export const AppProvider = ({ children }) => {
 
   const getTotalLoginsCount = () => {
     return parseInt(localStorage.getItem('echo_total_logins') || '0');
+  };
+
+  const getTotalUsersCount = () => {
+    return JSON.parse(localStorage.getItem('echo_users') || '[]').length;
   };
 
   const value = {
@@ -191,7 +195,8 @@ export const AppProvider = ({ children }) => {
     getChatsForAdmin,
     getChatsForCustomer,
     getLoggedInUsersCount,
-    getTotalLoginsCount
+    getTotalLoginsCount,
+    getTotalUsersCount
   };
 
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>;

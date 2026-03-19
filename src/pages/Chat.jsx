@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { Send, Sparkles, Menu, X, ArrowLeft, Check, CheckCheck, Phone, Video } from 'lucide-react';
+import { Send, Sparkles, Menu, X, ArrowLeft, Check, CheckCheck } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useApp } from '../context/AppContext';
 
@@ -14,10 +14,15 @@ const Chat = ({ isAdmin = false }) => {
   const displayChats = isAdmin ? getChatsForAdmin() : getChatsForCustomer(user?.id);
 
   useEffect(() => {
-    if (!isAdmin && user && displayChats.length > 0 && !activeChat) {
-      setActiveChat(displayChats[0]);
+    if (!isAdmin && user && !activeChat) {
+      const existingChat = getChatsForCustomer(user.id);
+      if (existingChat.length > 0) {
+        setActiveChat(existingChat[0]);
+      } else if (user.role !== 'admin') {
+        startChat(user.id, user.name, user.email);
+      }
     }
-  }, [user, displayChats]);
+  }, [user, displayChats, activeChat]);
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -148,14 +153,7 @@ const Chat = ({ isAdmin = false }) => {
                       <p className="text-sm text-[#8696a1] truncate">{isAdmin ? activeChat.userEmail : 'Online'}</p>
                     </div>
                   </div>
-                  <div className="flex items-center gap-1">
-                    <button className="p-2 text-[#8696a1] hover:bg-[#2a3942] rounded-full transition-colors">
-                      <Phone className="w-5 h-5" />
-                    </button>
-                    <button className="p-2 text-[#8696a1] hover:bg-[#2a3942] rounded-full transition-colors">
-                      <Video className="w-5 h-5" />
-                    </button>
-                  </div>
+
                 </div>
               </div>
 
