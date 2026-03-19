@@ -14,34 +14,28 @@ const Chat = ({ isAdmin = false }) => {
   const displayChats = isAdmin ? getChatsForAdmin() : getChatsForCustomer(user?.id);
 
   useEffect(() => {
-    if (!isAdmin && user && !activeChat) {
+    if (!isAdmin && user) {
       const existingChat = getChatsForCustomer(user.id);
       if (existingChat.length > 0) {
         setActiveChat(existingChat[0]);
-      } else if (user.role !== 'admin') {
+      } else {
         startChat(user.id, user.name, user.email);
       }
     }
-  }, [user, displayChats, activeChat]);
+  }, [user, isAdmin]);
 
   useEffect(() => {
-    const checkForNewMessages = () => {
-      const storedChats = JSON.parse(localStorage.getItem('echo_chats') || '[]');
-      if (isAdmin) {
-        const latestChats = storedChats.filter(c => c.userId && c.userId !== 'admin');
-        if (JSON.stringify(latestChats) !== JSON.stringify(displayChats)) {
-          window.location.reload();
-        }
-      } else if (user && activeChat) {
-        const latestChat = storedChats.find(c => c.id === activeChat.id);
-        if (latestChat && JSON.stringify(latestChat.messages) !== JSON.stringify(activeChat.messages)) {
-          setActiveChat(latestChat);
+    const interval = setInterval(() => {
+      const stored = JSON.parse(localStorage.getItem('echo_chats') || '[]');
+      if (!isAdmin && activeChat) {
+        const chat = stored.find(c => c.id === activeChat.id);
+        if (chat) {
+          setActiveChat(chat);
         }
       }
-    };
-    const interval = setInterval(checkForNewMessages, 3000);
+    }, 2000);
     return () => clearInterval(interval);
-  }, [isAdmin, user, activeChat, displayChats]);
+  }, [isAdmin, activeChat]);
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
