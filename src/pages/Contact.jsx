@@ -119,7 +119,7 @@ const Contact = () => {
                     </div>
                     <div>
                       <p className="text-xs text-slate-400">Email</p>
-                      <p className="text-sm text-white">contact@echoai.com</p>
+                      <p className="text-sm text-white">vishalrajan275@gmail.com</p>
                     </div>
                   </div>
                   <div className="flex items-center gap-3">
@@ -128,7 +128,7 @@ const Contact = () => {
                     </div>
                     <div>
                       <p className="text-xs text-slate-400">Phone</p>
-                      <p className="text-sm text-white">+1 234 567 8900</p>
+                      <p className="text-sm text-white">7305619548</p>
                     </div>
                   </div>
                   <div className="flex items-center gap-3">
